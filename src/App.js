@@ -7,6 +7,8 @@ import Rank from "./Components/Rank/Rank"
 import "./App.css"
 import Particles from 'react-particles-js'
 import Clarifai from "clarifai"
+import Signin from "./Components/SignIn/Signin"
+import Register from "./Components/Register/Register"
 
 const app = new Clarifai.App({
   apiKey: '5ee1b0d7c14c495cad7b231be854cbb6'
@@ -31,7 +33,8 @@ class App extends Component{
     state={
       input:"",
       imageUrl:"",
-      box:{}
+      box:{},
+      route:"Signin",
     }
   
     calculateFaceLocation= (data) => {
@@ -72,16 +75,26 @@ class App extends Component{
       .then(response => this.showTheFaceBox(this.calculateFaceLocation(response)))
       .catch(err => console.log(err));
     }
+    onRouteChange = (value) =>{
+      this.setState({route:value})
+    }
    render(){
   return (
     <div className="App">
       <Particles className="particles"
         params={particlesOptions} />
-      <Navigation />
+      <Navigation isSignedIn={this.state.isSignedIn} onRouteChange={this.onRouteChange}/>
+      { this.state.route === "home"?
+      <div>
       <Logo />
       <Rank />
       <ImageLinkForm onInputChange={this.onInputChange} onClickButton={this.onClickButton}/>
       <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
+      </div>:(
+        this.state.route === "Signin"?
+       <Signin onRouteChange={this.onRouteChange}/>:
+       <Register onRouteChange={this.onRouteChange}/>
+      )}
 
       
     </div>
